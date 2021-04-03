@@ -26,9 +26,8 @@
 </template>
 
 <script>
-import { signUp, registDatabase } from '../components/helpers/definition';
-import 'firebase/database';
-import firebase from 'firebase/app';
+import { signUp } from '../components/helpers/definition';
+import 'firebase/auth';
 
 export default {
   data() {
@@ -40,14 +39,11 @@ export default {
   },
   methods: {
     registUser() {
-      registDatabase(this.userName, this.email, this.password);
       signUp(this.email, this.password);
     },
   },
   computed: {
     signUp,
-    registDatabase,
-    firebase,
   },
 };
 </script>
