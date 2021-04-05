@@ -1,5 +1,3 @@
-import firebase from 'firebase/app';
-
 const signUp = function(email, password) {
   firebase
     .auth()

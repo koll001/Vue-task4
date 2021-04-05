@@ -4,19 +4,37 @@
       <img alt="Vue logo" src="../assets/logo.png" />
     </div>
     <h1>新規登録画面</h1>
-    <form @submit.prevent="registUser()">
+    <form @submit.prevent="signUpUser()">
       <div class="ask">
         <span style="padding: 15px;">ユーザー名</span>
-        <input type="text" placeholder="Username" v-model="userName" />
+        <input
+          type="text"
+          placeholder="Username"
+          v-model="userName"
+          @change="updateUserName()"
+        />
       </div>
       <div class="ask">
         <span>メールアドレス</span>
-        <input type="text" placeholder="E-mail" v-model="email" />
+        <input
+          type="text"
+          placeholder="E-mail"
+          v-model="email"
+          @change="updateEmail()"
+        />
       </div>
       <div class="ask">
         <span style="padding: 15px">パスワード</span>
-        <input type="password" placeholder="Password" v-model="password" />
+        <input
+          type="password"
+          placeholder="Password"
+          v-model="password"
+          @change="updatePassword()"
+        />
       </div>
+      <transition name="fade">
+        <p class="errMsg" v-if="errMsg">{{ errMsg }}</p>
+      </transition>
       <div class="button">
         <button type="submit">新規登録</button>
       </div>
@@ -26,25 +44,41 @@
 </template>
 
 <script>
-import { signUp } from '../components/helpers/definition';
-import 'firebase/auth';
-
 export default {
   data() {
     return {
       userName: '',
       email: '',
       password: '',
+      errMsg: false,
     };
   },
   methods: {
-    registUser() {
-      signUp(this.email, this.password);
+    updateUserName() {
+      this.$store.dispatch('updateUserName', this.userName);
+    },
+    updateEmail() {
+      this.$store.dispatch('updateEmail', this.email);
+    },
+    updatePassword() {
+      this.$store.dispatch('updatePassword', this.password);
+    },
+    signUpUser() {
+      if (this.userName === '' || this.email === '' || this.password === '') {
+        this.errMsg = '全ての項目を入力してください';
+        return;
+      }
+      if (this.password.length < 6) {
+        this.errMsg = 'パスワードは6文字以上で入力してください';
+      }
+      this.$store.dispatch('signUpUser');
+      this.errMsg = false;
+      this.userName = '';
+      this.email = '';
+      this.password = '';
     },
   },
-  computed: {
-    signUp,
-  },
+  computed: {},
 };
 </script>
 
@@ -76,5 +110,17 @@ input {
   background: rgb(0, 140, 255);
   color: white;
   cursor: pointer;
+}
+
+.errMsg {
+  color: red;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
