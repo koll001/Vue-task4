@@ -7,30 +7,15 @@
     <form @submit.prevent="signUpUser()">
       <div class="ask">
         <span style="padding: 15px;">ユーザー名</span>
-        <input
-          type="text"
-          placeholder="Username"
-          v-model="userName"
-          @change="updateUserName()"
-        />
+        <input type="text" placeholder="Username" v-model="userName" />
       </div>
       <div class="ask">
         <span>メールアドレス</span>
-        <input
-          type="text"
-          placeholder="E-mail"
-          v-model="email"
-          @change="updateEmail()"
-        />
+        <input type="text" placeholder="E-mail" v-model="email" />
       </div>
       <div class="ask">
         <span style="padding: 15px">パスワード</span>
-        <input
-          type="password"
-          placeholder="Password"
-          v-model="password"
-          @change="updatePassword()"
-        />
+        <input type="password" placeholder="Password" v-model="password" />
       </div>
       <transition name="fade">
         <p class="errMsg" v-if="errMsg">{{ errMsg }}</p>
@@ -54,15 +39,6 @@ export default {
     };
   },
   methods: {
-    updateUserName() {
-      this.$store.dispatch('updateUserName', this.userName);
-    },
-    updateEmail() {
-      this.$store.dispatch('updateEmail', this.email);
-    },
-    updatePassword() {
-      this.$store.dispatch('updatePassword', this.password);
-    },
     signUpUser() {
       if (this.userName === '' || this.email === '' || this.password === '') {
         this.errMsg = '全ての項目を入力してください';
@@ -71,7 +47,10 @@ export default {
       if (this.password.length < 6) {
         this.errMsg = 'パスワードは6文字以上で入力してください';
       }
-      this.$store.dispatch('signUpUser');
+      this.$store.dispatch('signUpUser', {
+        email: this.email,
+        password: this.password,
+      });
       this.errMsg = false;
       this.userName = '';
       this.email = '';
