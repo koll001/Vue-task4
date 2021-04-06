@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import firebase from '../firebase';
+import 'firebase/auth';
 
 Vue.use(Vuex);
 
@@ -15,7 +16,6 @@ export default new Vuex.Store({
   },
   actions: {
     signUpUser({ commit }, { email, password }) {
-      console.log(firebase);
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
