@@ -50,6 +50,7 @@ export default {
       this.$store.dispatch('signUpUser', {
         email: this.email,
         password: this.password,
+        userName: this.userName,
       });
       this.errMsg = false;
       this.userName = '';

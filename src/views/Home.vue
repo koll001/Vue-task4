@@ -5,6 +5,7 @@
       <p>ログイン後の画面</p>
     </div>
     <router-link to="/signup" tag="button">サインアップ</router-link>
+    <router-link to="/signin" tag="button">サインイン</router-link>
   </div>
 </template>
 
