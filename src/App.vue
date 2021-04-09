@@ -13,16 +13,12 @@
   color: #2c3e50;
 }
 
-#nav {
-  padding: 30px;
+a {
+  color: rgb(8, 149, 184);
+  text-decoration: none;
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+a:hover {
+  text-decoration: underline rgb(8, 149, 184);
 }
 </style>
