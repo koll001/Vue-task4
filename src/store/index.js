@@ -2,26 +2,38 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { firebase } from '../firebase';
 import 'firebase/auth';
+import 'firebase/database';
+import router from '../router';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     user: null,
-    userName: null,
+    userBalance: null,
+  },
+  getterts: {
+    getUserName(state) {
+      return state.user.displayName;
+    },
+    getUserBalance(state) {
+      return state.userBalance;
+    },
   },
   mutations: {
     setUser(state, val) {
       state.user = val;
+      console.log(val);
     },
-    serUserName(state, val) {
-      state.userName = val;
+    setUserBalance(state, val) {
+      state.userBalance = val;
+      console.log(val);
     },
   },
   actions: {
     signUpUser({ commit }, { email, password, userName }) {
-      firebase
-        .auth()
+      const auth = firebase.auth();
+      auth
         .createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
           const user = userCredential.user;
@@ -29,9 +41,22 @@ export default new Vuex.Store({
             displayName: userName,
           });
           commit('setUser', user);
-          commit('serUserName', userName);
-          console.log(user);
+          return user;
         })
+        .then((user) => {
+          const data = firebase.database();
+          data
+            .ref('users')
+            .child(user.uid)
+            .set({
+              userName: user.displayName,
+              email: user.email,
+              balance: 1000,
+            });
+          commit('setUserBalance', 1000);
+          router.push('/');
+        })
+
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
@@ -46,7 +71,7 @@ export default new Vuex.Store({
           // Signed in
           const user = userCredential.user;
           commit('setUser', user);
-          console.log(user);
+          router.push('/');
           // ...
         })
         .catch((error) => {
