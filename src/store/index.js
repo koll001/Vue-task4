@@ -31,37 +31,25 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    signUpUser({ commit }, { email, password, userName }) {
+    async signUpUser({ commit }, { email, password, userName }) {
       const auth = firebase.auth();
-      auth
-        .createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          user.updateProfile({
-            displayName: userName,
-          });
-          commit('setUser', user);
-          return user;
-        })
-        .then((user) => {
-          const data = firebase.database();
-          data
-            .ref('users')
-            .child(user.uid)
-            .set({
-              userName: user.displayName,
-              email: user.email,
-              balance: 1000,
-            });
-          commit('setUserBalance', 1000);
-          router.push('/');
-        })
-
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(`${errorCode}:${errorMessage}`);
+      const result = await auth.createUserWithEmailAndPassword(email, password);
+      const user = result.user;
+      await user.updateProfile({
+        displayName: userName,
+      });
+      commit('setUser', user);
+      const data = firebase.database();
+      await data
+        .ref('users')
+        .child(user.uid)
+        .set({
+          userName: user.displayName,
+          email: user.email,
+          balance: 1000,
         });
+      commit('setUserBalance', 1000);
+      await router.push('/');
     },
     loginUser({ commit }, { email, password }) {
       firebase
