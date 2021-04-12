@@ -8,9 +8,12 @@
       <p>残高：</p>
       <p>{{ userBalance }}</p>
       <div class="button">
-        <router-link to="/signup" tag="button">ログアウト</router-link>
+        <router-link to="/" tag="button">ログアウト</router-link>
       </div>
-      <p v-if="$store.state.user">{{ $store.state.user.displayName }}</p>
+    </div>
+    <h1>ユーザー覧</h1>
+    <div class="user-contents">
+      <h3>ユーザー名</h3>
     </div>
   </div>
 </template>
@@ -29,6 +32,10 @@ export default {
 </script>
 
 <style scoped>
+.home {
+  width: 90%;
+  margin: 0 auto;
+}
 .align {
   display: flex;
 }
@@ -37,6 +44,7 @@ export default {
   margin-right: auto;
 }
 .button button {
+  margin-left: 5px;
   margin-top: 12px;
   padding: 3px 10px;
   color: rgb(8, 149, 184);
@@ -50,5 +58,11 @@ export default {
   background: rgb(0, 140, 255);
   color: white;
   cursor: pointer;
+}
+
+.user-contents {
+  width: 50%;
+  text-align: left;
+  margin: 0 auto;
 }
 </style>

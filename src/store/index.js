@@ -12,7 +12,7 @@ export default new Vuex.Store({
     user: null,
     userBalance: null,
   },
-  getterts: {
+  getters: {
     getUserName(state) {
       return state.user.displayName;
     },
@@ -39,8 +39,8 @@ export default new Vuex.Store({
         displayName: userName,
       });
       commit('setUser', user);
-      const data = firebase.database();
-      await data
+      const database = firebase.database();
+      await database
         .ref('users')
         .child(user.uid)
         .set({
@@ -49,25 +49,23 @@ export default new Vuex.Store({
           balance: 1000,
         });
       commit('setUserBalance', 1000);
-      await router.push('/');
+      router.push('/home');
     },
-    loginUser({ commit }, { email, password }) {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user;
-          commit('setUser', user);
-          router.push('/');
-          // ...
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(`${errorCode}:${errorMessage}`);
+    async loginUser({ commit }, { email, password }) {
+      const auth = firebase.auth();
+      const result = await auth.signInWithEmailAndPassword(email, password);
+      const user = result.user;
+      commit('setUser', user);
+      const database = firebase.database();
+      database
+        .ref('users')
+        .child(user.uid)
+        .on('value', (snapshot) => {
+          const data = snapshot.val();
+          const userBalance = data.balance;
+          commit('setUserBalance', userBalance);
         });
+      router.push('/home');
     },
   },
-  modules: {},
 });
