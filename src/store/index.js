@@ -67,5 +67,30 @@ export default new Vuex.Store({
         });
       router.push('/home');
     },
+
+    async signOutUser() {
+      const auth = firebase.auth();
+      await auth.signOut();
+      router.push('/signin').catch((err) => {
+        if (
+          err.name !== 'NavigationDuplicated' &&
+          !err.message.includes(
+            'Avoided redundant navigation to current location'
+          )
+        ) {
+          // But print any other errors to the console
+          console.log(err);
+        }
+      });
+    },
+
+    async checkUserLoggedIn() {
+      const auth = firebase.auth();
+      auth.onAuthStateChanged((user) => {
+        if (!user) {
+          router.push('/signin');
+        }
+      });
+    },
   },
 });
