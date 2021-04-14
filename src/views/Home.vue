@@ -4,11 +4,10 @@
       <img alt="Vue logo" src="../assets/logo.png" />
     </div>
     <div class="align">
-      <p class="align-left">{{ userName }}さんようこそ！</p>
-      <p>残高：</p>
-      <p>{{ userBalance }}</p>
+      <p class="align-left">{{ userName }}さんようこそ！！</p>
+      <p>残高：{{ userBalance }}</p>
       <div class="button">
-        <router-link to="/" tag="button">ログアウト</router-link>
+        <button @click="signOutUser()">ログアウト</button>
       </div>
     </div>
     <h1>ユーザー覧</h1>
@@ -20,10 +19,25 @@
 
 <script>
 export default {
-  computed: {
-    userName: function() {
-      return this.$store.getters.getUserName;
+  beforeCreate() {
+    this.$store.dispatch('checkUserLoggedIn');
+  },
+  mounted() {
+    this.userName = this.$store.getters.getUserName;
+  },
+
+  data() {
+    return {
+      userName: '',
+    };
+  },
+  methods: {
+    signOutUser() {
+      this.$store.dispatch('signOutUser');
     },
+  },
+
+  computed: {
     userBalance: function() {
       return this.$store.getters.getUserBalance;
     },
