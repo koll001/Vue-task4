@@ -2,59 +2,79 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { firebase } from '../firebase';
 import 'firebase/auth';
+import 'firebase/database';
+import router from '../router';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     user: null,
-    userName: null,
+    userBalance: null,
+  },
+  getters: {
+    getUserName(state) {
+      return state.user.displayName;
+    },
+    getUserBalance(state) {
+      return state.userBalance;
+    },
   },
   mutations: {
     setUser(state, val) {
       state.user = val;
     },
-    serUserName(state, val) {
-      state.userName = val;
+    setUserBalance(state, val) {
+      state.userBalance = val;
     },
   },
   actions: {
-    signUpUser({ commit }, { email, password, userName }) {
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          user.updateProfile({
-            displayName: userName,
+    async signUpUser({ commit }, { email, password, userName }) {
+      const auth = firebase.auth();
+      try {
+        const result = await auth.createUserWithEmailAndPassword(
+          email,
+          password
+        );
+        const user = result.user;
+        await user.updateProfile({
+          displayName: userName,
+        });
+        commit('setUser', user);
+        const database = firebase.database();
+        await database
+          .ref('users')
+          .child(user.uid)
+          .set({
+            userName: user.displayName,
+            email: user.email,
+            balance: 1000,
           });
-          commit('setUser', user);
-          commit('serUserName', userName);
-          console.log(user);
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(`${errorCode}:${errorMessage}`);
-        });
+        commit('setUserBalance', 1000);
+        router.push('/home');
+      } catch (error) {
+        console.log(error);
+      }
     },
-    loginUser({ commit }, { email, password }) {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user;
-          commit('setUser', user);
-          console.log(user);
-          // ...
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(`${errorCode}:${errorMessage}`);
-        });
+    async loginUser({ commit }, { email, password }) {
+      const auth = firebase.auth();
+      try {
+        const result = await auth.signInWithEmailAndPassword(email, password);
+        const user = result.user;
+        commit('setUser', user);
+        const database = firebase.database();
+        database
+          .ref('users')
+          .child(user.uid)
+          .on('value', (snapshot) => {
+            const data = snapshot.val();
+            const userBalance = data.balance;
+            commit('setUserBalance', userBalance);
+          });
+        router.push('/home');
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
-  modules: {},
 });

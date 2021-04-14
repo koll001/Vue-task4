@@ -6,7 +6,7 @@
     <h1>新規登録画面</h1>
     <form @submit.prevent="signUpUser()">
       <div class="ask">
-        <span style="padding: 15px;">ユーザー名</span>
+        <span class="input-title">ユーザー名</span>
         <input type="text" placeholder="Username" v-model="userName" />
       </div>
       <div class="ask">
@@ -58,15 +58,17 @@ export default {
       this.password = '';
     },
   },
-  computed: {},
 };
 </script>
 
-<style>
+<style scoped>
 h1 {
   margin-bottom: 30px;
 }
 
+.input-title {
+  padding: 15px;
+}
 input {
   border: solid 2px lightgray;
   border-radius: 2px;

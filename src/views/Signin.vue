@@ -10,12 +10,9 @@
         <input type="text" placeholder="E-mail" v-model="email" />
       </div>
       <div class="ask">
-        <span style="padding: 15px">パスワード</span>
+        <span class="input-title">パスワード</span>
         <input type="password" placeholder="Password" v-model="password" />
       </div>
-      <transition name="fade">
-        <p class="errMsg" v-if="errMsg">{{ errMsg }}</p>
-      </transition>
       <div class="button">
         <button type="submit">ログイン</button>
       </div>
@@ -30,7 +27,6 @@ export default {
     return {
       email: '',
       password: '',
-      errMsg: false,
     };
   },
   methods: {
@@ -43,20 +39,21 @@ export default {
         email: this.email,
         password: this.password,
       });
-      this.errMsg = false;
       this.email = '';
       this.password = '';
     },
   },
-  computed: {},
 };
 </script>
 
-<style>
+<style scoped>
 h1 {
   margin-bottom: 30px;
 }
 
+.input-title {
+  padding: 15px;
+}
 input {
   border: solid 2px lightgray;
   border-radius: 2px;
@@ -80,17 +77,5 @@ input {
   background: rgb(0, 140, 255);
   color: white;
   cursor: pointer;
-}
-
-.errMsg {
-  color: red;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
 }
 </style>
