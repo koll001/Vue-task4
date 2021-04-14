@@ -19,9 +19,6 @@
 
 <script>
 export default {
-  beforeCreate() {
-    this.$store.dispatch('checkUserLoggedIn');
-  },
   mounted() {
     this.userName = this.$store.getters.getUserName;
   },
@@ -38,7 +35,7 @@ export default {
   },
 
   computed: {
-    userBalance: function() {
+    userBalance() {
       return this.$store.getters.getUserBalance;
     },
   },

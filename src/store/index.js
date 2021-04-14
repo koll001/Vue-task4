@@ -75,7 +75,6 @@ export default new Vuex.Store({
       } catch (error) {
         console.log(error);
       }
-
     },
 
     async signOutUser() {
@@ -90,19 +89,6 @@ export default new Vuex.Store({
             )
           ) {
             console.log(error);
-          }
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async checkUserLoggedIn() {
-      const auth = firebase.auth();
-      try {
-        auth.onAuthStateChanged((user) => {
-          if (!user) {
-            router.push('/signin');
           }
         });
       } catch (error) {
