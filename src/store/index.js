@@ -11,7 +11,6 @@ export default new Vuex.Store({
   state: {
     user: null,
     userBalance: null,
-    usersData: null,
   },
   getters: {
     getUserName(state) {
@@ -19,9 +18,6 @@ export default new Vuex.Store({
     },
     getUserBalance(state) {
       return state.userBalance;
-    },
-    getUsersData(state) {
-      return state.usersData;
     },
   },
   mutations: {
@@ -31,12 +27,9 @@ export default new Vuex.Store({
     setUserBalance(state, val) {
       state.userBalance = val;
     },
-    setUsersData(state, val) {
-      state.usersData = val;
-    },
   },
   actions: {
-    async signUpUser({ dispatch, commit }, { email, password, userName }) {
+    async signUpUser({ commit }, { email, password, userName }) {
       const auth = firebase.auth();
       try {
         const result = await auth.createUserWithEmailAndPassword(
@@ -58,13 +51,12 @@ export default new Vuex.Store({
             balance: 1000,
           });
         commit('setUserBalance', 1000);
-        dispatch('fetchUsersData', user.uid);
         router.push('/home');
       } catch (error) {
         console.log(error);
       }
     },
-    async loginUser({ dispatch, commit }, { email, password }) {
+    async loginUser({ commit }, { email, password }) {
       const auth = firebase.auth();
       try {
         const result = await auth.signInWithEmailAndPassword(email, password);
@@ -79,48 +71,7 @@ export default new Vuex.Store({
             const userBalance = data.balance;
             commit('setUserBalance', userBalance);
           });
-        dispatch('fetchUsersData', user.uid);
         router.push('/home');
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    async signOutUser() {
-      const auth = firebase.auth();
-      try {
-        await auth.signOut();
-        router.push('/signin').catch((error) => {
-          if (
-            error.name !== 'NavigationDuplicated' &&
-            !error.message.includes(
-              'Avoided redundant navigation to current location'
-            )
-          ) {
-            console.log(error);
-          }
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async fetchUsersData({ commit }, userId) {
-      const database = firebase.database();
-      const usersData = [];
-      try {
-        database
-          .ref('users/')
-          .orderByChild('userName')
-          .on('value', (snapshot) => {
-            snapshot.forEach((childSnapshot) => {
-              const childKey = childSnapshot.key;
-              if (userId !== childKey) {
-                const childData = childSnapshot.val();
-                usersData.push(childData);
-              }
-            });
-            commit('setUsersData', usersData);
-          });
       } catch (error) {
         console.log(error);
       }
