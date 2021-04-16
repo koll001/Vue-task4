@@ -13,12 +13,31 @@
     <h1>ユーザー覧</h1>
     <div class="user-contents">
       <h3>ユーザー名</h3>
+      <div class="user-list" v-for="(user, index) in usersData" :key="index">
+        <p class="align-left">{{ user.userName }}</p>
+        <div class="user-button">
+          <button @click="openModal('balance')">walletを見る</button>
+        </div>
+        <div class="user-button">
+          <button>送る</button>
+        </div>
+        <myModal
+          v-if="showUserBalance"
+          @close="closeModal('balance')"
+          :message="closeMessage"
+        >
+          <p>{{ user.userName }}さんの残高</p>
+          <p>{{ user.balance }}</p>
+        </myModal>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import myModal from '../components/MyModal';
 export default {
+  components: { myModal },
   mounted() {
     this.userName = this.$store.getters.getUserName;
   },
@@ -26,17 +45,32 @@ export default {
   data() {
     return {
       userName: '',
+      showUserBalance: false,
+      closeMessage: 'close',
     };
   },
   methods: {
     signOutUser() {
       this.$store.dispatch('signOutUser');
     },
+    openModal(val) {
+      if (val === 'balance') {
+        this.showUserBalance = true;
+      }
+    },
+    closeModal(val) {
+      if (val === 'balance') {
+        this.showUserBalance = false;
+      }
+    },
   },
 
   computed: {
     userBalance() {
       return this.$store.getters.getUserBalance;
+    },
+    usersData() {
+      return this.$store.getters.getUsersData;
     },
   },
 };
@@ -49,6 +83,11 @@ export default {
 }
 .align {
   display: flex;
+}
+
+.align button {
+  box-sizing: initial;
+  padding: 1px;
 }
 
 .align-left {
@@ -71,9 +110,33 @@ export default {
   cursor: pointer;
 }
 
+.user-button button {
+  margin-left: 5px;
+  margin-top: 12px;
+  padding: 3px 10px;
+  color: white;
+  background-color: rgb(8, 178, 184);
+  border: solid 1px rgb(8, 178, 184);
+  border-radius: 6px;
+}
+
 .user-contents {
   width: 50%;
   text-align: left;
   margin: 0 auto;
+}
+
+.user-contents h3 {
+  margin: 0;
+}
+.user-list {
+  display: flex;
+  margin-bottom: 3px;
+  height: 30px;
+  margin-left: 20px;
+  text-align: center;
+}
+.user-list p {
+  font-size: 18px;
 }
 </style>
