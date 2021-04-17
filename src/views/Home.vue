@@ -41,7 +41,6 @@ export default {
   mounted() {
     this.userName = this.$store.getters.getUserName;
   },
-
   data() {
     return {
       userName: '',
@@ -64,7 +63,6 @@ export default {
       }
     },
   },
-
   computed: {
     userBalance() {
       return this.$store.getters.getUserBalance;
@@ -84,12 +82,10 @@ export default {
 .align {
   display: flex;
 }
-
 .align button {
   box-sizing: initial;
   padding: 1px;
 }
-
 .align-left {
   margin-right: auto;
 }
@@ -102,14 +98,12 @@ export default {
   background: none;
   border-radius: 6px;
 }
-
 .button button:hover {
   transition: 0.3s;
   background: rgb(0, 140, 255);
   color: white;
   cursor: pointer;
 }
-
 .user-button button {
   margin-left: 5px;
   margin-top: 12px;
@@ -119,13 +113,11 @@ export default {
   border: solid 1px rgb(8, 178, 184);
   border-radius: 6px;
 }
-
 .user-contents {
   width: 50%;
   text-align: left;
   margin: 0 auto;
 }
-
 .user-contents h3 {
   margin: 0;
 }
