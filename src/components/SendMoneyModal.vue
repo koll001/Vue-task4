@@ -3,7 +3,7 @@
     <div id="content" @click.stop>
       <slot></slot>
       <div class="button">
-        <button @click="closeModal()">{{ message }}</button>
+        <button @click="send()">送信</button>
       </div>
     </div>
   </div>
@@ -11,12 +11,12 @@
 
 <script>
 export default {
-  props: {
-    message: String,
-  },
   methods: {
     closeModal() {
       this.$emit('close');
+    },
+    send() {
+      this.$emit('send');
     },
   },
 };

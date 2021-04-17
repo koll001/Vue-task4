@@ -17,6 +17,9 @@ export default new Vuex.Store({
     getUserName(state) {
       return state.user.displayName;
     },
+    getUserId(state) {
+      return state.user.uid;
+    },
     getUserBalance(state) {
       return state.userBalance;
     },
@@ -105,7 +108,7 @@ export default new Vuex.Store({
       }
     },
 
-    async fetchUsersData({ commit }, userId) {
+    async fetchUsersData({ commit }, myId) {
       const database = firebase.database();
       try {
         database
@@ -114,10 +117,10 @@ export default new Vuex.Store({
           .on('value', (snapshot) => {
             const usersData = [];
             snapshot.forEach((childSnapshot) => {
-              const id = childSnapshot.key;
-              if (userId !== id) {
+              const userId = childSnapshot.key;
+              if (myId !== userId) {
                 const childData = childSnapshot.val();
-                const userData = { id, ...childData };
+                const userData = { userId, ...childData };
                 usersData.push(userData);
               }
             });
@@ -126,6 +129,23 @@ export default new Vuex.Store({
       } catch (error) {
         console.log(error);
       }
+    },
+
+    async updateUserBalance(
+      { getters },
+      { receiveUserId, receiveUserBalance, amountSendMoney }
+    ) {
+      const myId = getters.getUserId;
+      const myBalance = getters.getUserBalance;
+      const resultMyBalance = myBalance - amountSendMoney;
+      const resultReceiveUserBalance = receiveUserBalance + amountSendMoney;
+      const updates = {};
+      updates['users/' + myId + '/' + 'balance'] = resultMyBalance;
+      updates[
+        'users/' + receiveUserId + '/' + 'balance'
+      ] = resultReceiveUserBalance;
+      const database = firebase.database();
+      return await database.ref().update(updates);
     },
   },
 });
