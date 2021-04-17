@@ -27,6 +27,7 @@ export default {
   z-index: 10;
   width: 20%;
   background: #fff;
+  text-align: center;
 }
 #overlay {
   z-index: 1;

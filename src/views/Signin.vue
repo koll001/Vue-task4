@@ -16,7 +16,7 @@
       <div class="button">
         <button type="submit">ログイン</button>
       </div>
-      <router-link to="/signup">新規登録はこちら</router-link>
+      <router-link to="/">新規登録はこちら</router-link>
     </form>
   </div>
 </template>

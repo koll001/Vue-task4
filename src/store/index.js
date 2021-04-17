@@ -107,17 +107,18 @@ export default new Vuex.Store({
 
     async fetchUsersData({ commit }, userId) {
       const database = firebase.database();
-      const usersData = [];
       try {
         database
           .ref('users/')
           .orderByChild('userName')
           .on('value', (snapshot) => {
+            const usersData = [];
             snapshot.forEach((childSnapshot) => {
-              const childKey = childSnapshot.key;
-              if (userId !== childKey) {
+              const id = childSnapshot.key;
+              if (userId !== id) {
                 const childData = childSnapshot.val();
-                usersData.push(childData);
+                const userData = { id, ...childData };
+                usersData.push(userData);
               }
             });
             commit('setUsersData', usersData);

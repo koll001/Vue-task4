@@ -13,23 +13,25 @@
     <h1>ユーザー覧</h1>
     <div class="user-contents">
       <h3>ユーザー名</h3>
-      <div class="user-list" v-for="(user, index) in usersData" :key="index">
+      <div class="user-list" v-for="user in usersData" :key="user.id">
         <p class="align-left">{{ user.userName }}</p>
         <div class="user-button">
-          <button @click="openModal('balance')">walletを見る</button>
+          <button @click="openModal(user.userName, user.balance)">
+            walletを見る
+          </button>
         </div>
         <div class="user-button">
           <button>送る</button>
         </div>
-        <myModal
-          v-if="showUserBalance"
-          @close="closeModal('balance')"
-          :message="closeMessage"
-        >
-          <p>{{ user.userName }}さんの残高</p>
-          <p>{{ user.balance }}</p>
-        </myModal>
       </div>
+      <myModal
+        v-if="showUserBalance"
+        @close="closeModal()"
+        :message="closeMessage"
+      >
+        <p>{{ othersUserName }}さんの残高</p>
+        <p>{{ othersUserBalance }}</p>
+      </myModal>
     </div>
   </div>
 </template>
@@ -46,21 +48,21 @@ export default {
       userName: '',
       showUserBalance: false,
       closeMessage: 'close',
+      othersUserName: '',
+      othersUserBalance: null,
     };
   },
   methods: {
     signOutUser() {
       this.$store.dispatch('signOutUser');
     },
-    openModal(val) {
-      if (val === 'balance') {
-        this.showUserBalance = true;
-      }
+    openModal(userName, balance) {
+      this.showUserBalance = true;
+      this.othersUserName = userName;
+      this.othersUserBalance = balance;
     },
-    closeModal(val) {
-      if (val === 'balance') {
-        this.showUserBalance = false;
-      }
+    closeModal() {
+      this.showUserBalance = false;
     },
   },
   computed: {
