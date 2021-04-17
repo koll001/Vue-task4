@@ -13,13 +13,13 @@
     <h1>ユーザー覧</h1>
     <div class="user-contents">
       <h3>ユーザー名</h3>
-      <div class="user-list" v-for="(user, index) in usersData" :key="index">
+      <div class="user-list" v-for="user in usersData" :key="user.id">
         <p class="align-left">{{ user.userName }}</p>
         <div class="user-button">
           <button @click="openModal('balance')">walletを見る</button>
         </div>
         <div class="user-button">
-          <button>送る</button>
+          <button @click="openModal('send')">送る</button>
         </div>
         <myModal
           v-if="showUserBalance"
@@ -28,6 +28,15 @@
         >
           <p>{{ user.userName }}さんの残高</p>
           <p>{{ user.balance }}</p>
+        </myModal>
+        <myModal
+          v-if="showSendMoney"
+          @close="sendMoney(userName, user.id, inputMoney, userBalance)"
+          :message="sendMessage"
+        >
+          <p>あなたの残高：{{ userBalance }}</p>
+          <p>送る金額</p>
+          <input type="text" v-model.number="inputMoney" />
         </myModal>
       </div>
     </div>
@@ -45,7 +54,10 @@ export default {
     return {
       userName: '',
       showUserBalance: false,
+      showSendMoney: false,
       closeMessage: 'close',
+      sendMessage: '送信',
+      inputMoney: null,
     };
   },
   methods: {
@@ -55,12 +67,22 @@ export default {
     openModal(val) {
       if (val === 'balance') {
         this.showUserBalance = true;
+      } else if (val === 'send') {
+        this.showSendMoney = true;
       }
     },
     closeModal(val) {
       if (val === 'balance') {
         this.showUserBalance = false;
       }
+    },
+    sendMoney(receiveUserId, sendNum, receiveUserBalance) {
+      this.$store.dispatch('updateUserBalance', {
+        receiveUserId: receiveUserId,
+        sendNum: sendNum,
+        receiveUserBalance: receiveUserBalance,
+      });
+      this.showSendMoney = false;
     },
   },
   computed: {

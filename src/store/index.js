@@ -21,6 +21,7 @@ export default new Vuex.Store({
       return state.userBalance;
     },
     getUsersData(state) {
+      console.log(state.usersData);
       return state.usersData;
     },
   },
@@ -114,10 +115,11 @@ export default new Vuex.Store({
           .orderByChild('userName')
           .on('value', (snapshot) => {
             snapshot.forEach((childSnapshot) => {
-              const childKey = childSnapshot.key;
-              if (userId !== childKey) {
+              const id = childSnapshot.key;
+              if (userId !== id) {
                 const childData = childSnapshot.val();
-                usersData.push(childData);
+                const data = { id, ...childData };
+                usersData.push(data);
               }
             });
             commit('setUsersData', usersData);
@@ -125,6 +127,24 @@ export default new Vuex.Store({
       } catch (error) {
         console.log(error);
       }
+    },
+
+    async updateUserBalance(
+      { getters },
+      { receiveUserId, sendNum, receiveUserBalance }
+    ) {
+      const auth = firebase.auth();
+      const myUserId = auth.currentUser.uid;
+      const myBalance = getters.getUserBalance;
+      const updateMyBalance = myBalance - sendNum;
+      const updateReceiveUserBalance = receiveUserBalance + sendNum;
+      const updates = {};
+      updates['users/' + myUserId + '/' + 'balance'] = updateMyBalance;
+      updates[
+        'users/' + receiveUserId + '/' + 'balance'
+      ] = updateReceiveUserBalance;
+      const database = firebase.database();
+      return database.ref().update(updates);
     },
   },
 });
