@@ -87,8 +87,8 @@ export default {
     },
     sendMyMoney(receiveUserId, receiveUserBalance) {
       this.$store.dispatch('updateUserBalance', {
-        receiveUserId: receiveUserId,
-        receiveUserBalance: receiveUserBalance,
+        receiveUserId,
+        receiveUserBalance,
         amountSendMoney: this.amountSendMoney,
       });
       this.amountSendMoney = null;

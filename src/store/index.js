@@ -145,7 +145,25 @@ export default new Vuex.Store({
         'users/' + receiveUserId + '/' + 'balance'
       ] = resultReceiveUserBalance;
       const database = firebase.database();
-      return await database.ref().update(updates);
+      database.ref('users/').transaction(
+        (currentData) => {
+          if (database.ref('users/').child(myId)) {
+            if (database.ref('users/').child(receiveUserId)) {
+              console.log(currentData);
+              return database.ref().update(updates);
+            } else {
+              return;
+            }
+          } else if (currentData === null) {
+            return;
+          }
+        },
+        (error) => {
+          if (error) {
+            console.log(`エラー：${error}`);
+          }
+        }
+      );
     },
   },
 });
