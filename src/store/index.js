@@ -139,28 +139,30 @@ export default new Vuex.Store({
       const myBalance = getters.getUserBalance;
       const resultMyBalance = myBalance - amountSendMoney;
       const resultReceiveUserBalance = receiveUserBalance + amountSendMoney;
-      const updates = {};
-      updates['users/' + myId + '/' + 'balance'] = resultMyBalance;
-      updates[
-        'users/' + receiveUserId + '/' + 'balance'
-      ] = resultReceiveUserBalance;
       const database = firebase.database();
-      database.ref('users/').transaction(
+      await database.ref('users/').transaction(
         (currentData) => {
-          if (database.ref('users/').child(myId)) {
-            if (database.ref('users/').child(receiveUserId)) {
-              console.log(currentData);
-              return database.ref().update(updates);
-            } else {
-              return;
+          if (currentData) {
+            if (currentData[myId].balance) {
+              currentData[myId].balance = resultMyBalance;
+            } else if (!currentData[myId].balance) {
+              currentData[myId].balance = resultMyBalance;
             }
-          } else if (currentData === null) {
+            if (currentData[receiveUserId].balance) {
+              currentData[receiveUserId].balance = resultReceiveUserBalance;
+            } else if (!currentData[receiveUserId].balance) {
+              currentData[receiveUserId].balance = resultReceiveUserBalance;
+            }
+            return currentData;
+          } else {
             return;
           }
         },
-        (error) => {
+        (error, committed) => {
           if (error) {
             console.log(`エラー：${error}`);
+          } else if (committed) {
+            console.log(`コミット${committed}`);
           }
         }
       );
