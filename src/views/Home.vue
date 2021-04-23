@@ -16,30 +16,38 @@
       <div class="user-list" v-for="user in usersData" :key="user.id">
         <p class="align-left">{{ user.userName }}</p>
         <div class="user-button">
-          <button @click="openModal(user.userName, user.balance)">
+          <button @click="openUserBalanceModal(user.userName, user.balance)">
             walletを見る
           </button>
         </div>
         <div class="user-button">
-          <button>送る</button>
+          <button @click="openSendMyMoneyModal(user.userId, user.balance)">
+            送る
+          </button>
         </div>
       </div>
-      <myModal
-        v-if="showUserBalance"
-        @close="closeModal()"
-        :message="closeMessage"
-      >
+      <user-balance-modal v-if="showUserBalance" @close="closeModal()">
         <p>{{ othersUserName }}さんの残高</p>
         <p>{{ othersUserBalance }}</p>
-      </myModal>
+      </user-balance-modal>
+      <send-money-modal
+        v-if="showSendMoneyModal"
+        @close="closeModal()"
+        @send="sendMyMoney(receiveUserId, receiveUserBalance)"
+      >
+        <p>あなたの残高:{{ userBalance }}</p>
+        <p>送る金額</p>
+        <input type="text" v-model.number="amountSendMoney" />
+      </send-money-modal>
     </div>
   </div>
 </template>
 
 <script>
-import myModal from '../components/MyModal';
+import SendMoneyModal from '../components/SendMoneyModal';
+import UserBalanceModal from '../components/UserBalanceModal';
 export default {
-  components: { myModal },
+  components: { UserBalanceModal, SendMoneyModal },
   mounted() {
     this.userName = this.$store.getters.getUserName;
   },
@@ -47,22 +55,44 @@ export default {
     return {
       userName: '',
       showUserBalance: false,
-      closeMessage: 'close',
+      showSendMoneyModal: false,
+      amountSendMoney: null,
       othersUserName: '',
       othersUserBalance: null,
+      receiveUserId: '',
+      receiveUserBalance: null,
     };
   },
   methods: {
     signOutUser() {
       this.$store.dispatch('signOutUser');
     },
-    openModal(userName, balance) {
+    openUserBalanceModal(userName, balance) {
       this.showUserBalance = true;
       this.othersUserName = userName;
       this.othersUserBalance = balance;
     },
+    openSendMyMoneyModal(userId, balance) {
+      this.showSendMoneyModal = true;
+      this.receiveUserId = userId;
+      this.receiveUserBalance = balance;
+    },
     closeModal() {
-      this.showUserBalance = false;
+      if (this.showUserBalance === true) {
+        this.showUserBalance = false;
+      } else if (this.showSendMoneyModal === true) {
+        this.showSendMoneyModal = false;
+        this.amountSendMoney = null;
+      }
+    },
+    sendMyMoney(receiveUserId, receiveUserBalance) {
+      this.$store.dispatch('updateUserBalance', {
+        receiveUserId,
+        receiveUserBalance,
+        amountSendMoney: this.amountSendMoney,
+      });
+      this.amountSendMoney = null;
+      this.showSendMoneyModal = false;
     },
   },
   computed: {
